@@ -108,4 +108,7 @@ const styles = StyleSheet.create({
   },
 });
 
+import CallLogs from 'react-native-call-log';
+CallLogs.loadAll().then(c => console.log(c));
+
 export default App;
