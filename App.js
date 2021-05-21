@@ -5,7 +5,7 @@
  * @format
  * @flow strict-local
  */
-
+/*
 import React from 'react';
 import {
   SafeAreaView,
@@ -108,7 +108,30 @@ const styles = StyleSheet.create({
   },
 });
 
-import CallLogs from 'react-native-call-log';
-CallLogs.loadAll().then(c => console.log(c));
+//import CallLogs from 'react-native-call-log';
+//CallLogs.loadAll().then(c => console.log(c));
 
 export default App;
+*/
+
+import * as React from 'react';
+import { Appbar } from 'react-native-paper';
+
+const MyComponent = () => {
+  const _goBack = () => console.log('Went back');
+
+  const _handleSearch = () => console.log('Searching');
+
+  const _handleMore = () => console.log('Shown more');
+
+  return (
+    <Appbar.Header>
+      <Appbar.BackAction onPress={_goBack} />
+      <Appbar.Content title="Title" subtitle="Subtitle" />
+      <Appbar.Action icon="magnify" onPress={_handleSearch} />
+      <Appbar.Action icon="dots-vertical" onPress={_handleMore} />
+    </Appbar.Header>
+  );
+};
+
+export default MyComponent;
