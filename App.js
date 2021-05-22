@@ -18,25 +18,12 @@ import {
 } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import HomeScreen from './screens/HomeScreen'
+import ContactsScreen from './screens/ContactsScreen'
 
 const Tab = createMaterialBottomTabNavigator();
 
 
-const HomeScreen = () => {
-  return (
-    <View>
-      <Text>Home Screen</Text>
-    </View>
-  )
-}
-
-const ContactScreen = () => {
-  return (
-    <View>
-      <Text>Contacts Screen</Text>
-    </View>
-  )
-}
 
 const App = () => {
 
@@ -44,7 +31,7 @@ const App = () => {
     <NavigationContainer>
       <Tab.Navigator>
         <Tab.Screen name="Home" component={HomeScreen} />
-        <Tab.Screen name="Contacts" component={ContactScreen} />
+        <Tab.Screen name="Contacts" component={ContactsScreen} />
       </Tab.Navigator>
     </NavigationContainer>
   );
