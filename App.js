@@ -17,14 +17,35 @@ import {
   View,
 } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
+import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+
+const Tab = createMaterialBottomTabNavigator();
+
+
+const HomeScreen = () => {
+  return (
+    <View>
+      <Text>Home Screen</Text>
+    </View>
+  )
+}
+
+const ContactScreen = () => {
+  return (
+    <View>
+      <Text>Contacts Screen</Text>
+    </View>
+  )
+}
 
 const App = () => {
 
   return (
     <NavigationContainer>
-      <SafeAreaView>
-        <Text>Hello, Worlds</Text>
-      </SafeAreaView>
+      <Tab.Navigator>
+        <Tab.Screen name="Home" component={HomeScreen} />
+        <Tab.Screen name="Contacts" component={ContactScreen} />
+      </Tab.Navigator>
     </NavigationContainer>
   );
 };
