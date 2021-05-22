@@ -5,13 +5,15 @@ import {
     StyleSheet,
     Text,
     View,
+    Button
 } from 'react-native';
 
-const SettingsScreen = () => {
+const SettingsScreen = ({ navigation }) => {
     return (
-        <View>
-            <Text>Contacts Screen</Text>
-        </View>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} >
+            <Text>Settings Screen</Text>
+            <Button onPress={() => navigation.goBack()} title="Dismiss" />
+        </View >
     )
 }
 

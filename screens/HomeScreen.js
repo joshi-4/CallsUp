@@ -7,7 +7,9 @@ import {
     View,
 } from 'react-native';
 
-const HomeScreen = () => {
+import AppNavBar from '../components/Appbar';
+
+const HomeScreen = ({ navigation }) => {
     return (
         <View>
             <Text>Home Screen</Text>

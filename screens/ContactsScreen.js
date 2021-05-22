@@ -7,6 +7,8 @@ import {
     View,
 } from 'react-native';
 
+import AppNavBar from '../components/Appbar';
+
 const ContactsScreen = () => {
     return (
         <View>

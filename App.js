@@ -18,21 +18,37 @@ import {
 } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import HomeScreen from './screens/HomeScreen'
-import ContactsScreen from './screens/ContactsScreen'
+import { createStackNavigator } from '@react-navigation/stack';
+import HomeScreen from './screens/HomeScreen';
+import ContactsScreen from './screens/ContactsScreen';
+import SettingsScreen from './screens/SettingsScreen';
+import AppNavBar from './components/Appbar';
+
 
 const Tab = createMaterialBottomTabNavigator();
+const TabComponent = () => {
+  return (
+    <Tab.Navigator>
+      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Contacts" component={ContactsScreen} />
+    </Tab.Navigator>
+  )
+}
 
-
+const MainStack = createStackNavigator();
 
 const App = () => {
 
   return (
     <NavigationContainer>
-      <Tab.Navigator>
-        <Tab.Screen name="Home" component={HomeScreen} />
-        <Tab.Screen name="Contacts" component={ContactsScreen} />
-      </Tab.Navigator>
+      <MainStack.Navigator
+        initialRouteName="Tab"
+        screenOptions={{
+          header: AppNavBar,
+        }}>
+        <MainStack.Screen name='Tab' component={TabComponent} />
+        <MainStack.Screen name='Settings' component={SettingsScreen} options={{ headerShown: false }} />
+      </MainStack.Navigator>
     </NavigationContainer>
   );
 };
