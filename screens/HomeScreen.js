@@ -6,11 +6,20 @@ import {
     Text,
     View,
 } from 'react-native';
+import { Title, Card, Paragraph } from 'react-native-paper';
+import { appStyles } from '../styles';
+import ContactCard from '../components/ContactCard';
 
 const HomeScreen = ({ navigation }) => {
     return (
-        <View style={styles.container}>
-            <Text>HomeScreen</Text>
+        <View style={appStyles.container}>
+            <View>
+                <Title>Recommended Calls</Title>
+            </View>
+
+            <ContactCard />
+
+
         </View>
     )
 }

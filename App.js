@@ -11,9 +11,7 @@ import {
   SafeAreaView,
   ScrollView,
   StatusBar,
-  StyleSheet,
   Text,
-  useColorScheme,
   View,
 } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
@@ -53,7 +51,6 @@ const App = () => {
   );
 };
 
-const styles = StyleSheet.create({});
 
 //import CallLogs from 'react-native-call-log';
 //CallLogs.loadAll().then(c => console.log(c));
