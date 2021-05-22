@@ -7,8 +7,6 @@ import {
     View,
 } from 'react-native';
 
-import AppNavBar from '../components/Appbar';
-
 const ContactsScreen = () => {
     return (
         <View>
@@ -16,5 +14,5 @@ const ContactsScreen = () => {
         </View>
     )
 }
-
+const styles = StyleSheet.create({});
 export default ContactsScreen;

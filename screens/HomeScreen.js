@@ -7,14 +7,19 @@ import {
     View,
 } from 'react-native';
 
-import AppNavBar from '../components/Appbar';
-
 const HomeScreen = ({ navigation }) => {
     return (
-        <View>
-            <Text>Home Screen</Text>
+        <View style={styles.container}>
+            <Text>HomeScreen</Text>
         </View>
     )
 }
 
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        padding: 24,
+        backgroundColor: '#FFFFFF'
+    }
+});
 export default HomeScreen;
