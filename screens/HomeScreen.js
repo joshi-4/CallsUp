@@ -18,6 +18,8 @@ const HomeScreen = ({ navigation }) => {
             </View>
 
             <ContactCard />
+            <ContactCard />
+            <ContactCard />
 
 
         </View>
