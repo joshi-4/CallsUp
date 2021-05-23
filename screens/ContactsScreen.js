@@ -5,12 +5,24 @@ import {
     StyleSheet,
     Text,
     View,
+    FlatList
 } from 'react-native';
+import { appStyles } from '../styles';
+import ContactCard from '../components/ContactCard';
 
-const ContactsScreen = () => {
+const ContactsScreen = ({ route, navigaton }) => {
+
+
+    const userContacts = route.params.userContacts;
+
     return (
-        <View>
+        <View style={appStyles.container}>
+
             <Text>Contacts Screen</Text>
+            <FlatList
+                data={userContacts}
+                renderItem={() => <ContactCard />}
+            />
         </View>
     )
 }
