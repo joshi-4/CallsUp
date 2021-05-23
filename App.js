@@ -51,8 +51,11 @@ const App = () => {
   );
 };
 
+import Contacts from 'react-native-contacts';
 
-//import CallLogs from 'react-native-call-log';
-//CallLogs.loadAll().then(c => console.log(c));
+Contacts.getAll().then(c => console.log(c));
+
+import CallLogs from 'react-native-call-log';
+CallLogs.loadAll().then(c => console.log(c));
 
 export default App;
