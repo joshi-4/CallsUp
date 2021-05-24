@@ -7,21 +7,24 @@ import {
     View,
     FlatList
 } from 'react-native';
+import { Title } from 'react-native-paper';
 import { appStyles } from '../styles';
 import ContactCard from '../components/ContactCard';
 
-const ContactsScreen = ({ route, navigaton }) => {
+const ContactsScreen = ({ route, navigation }) => {
 
+    let contactScores = route.params.contactScores;
 
-    const userContacts = route.params.userContacts;
+    contactScores.sort((a, b) => { return (a.name > b.name); })
 
     return (
         <View style={appStyles.container}>
 
-            <Text>Contacts Screen</Text>
+            <Title>Contacts</Title>
             <FlatList
-                data={userContacts}
-                renderItem={() => <ContactCard />}
+                data={contactScores}
+                renderItem={({ item }) => <ContactCard item={item} />}
+                keyExtractor={(item, index) => { return index; }}
             />
         </View>
     )
