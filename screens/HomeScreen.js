@@ -9,6 +9,8 @@ import {
 import { Title, Card, Paragraph } from 'react-native-paper';
 import { appStyles } from '../styles';
 import ContactCard from '../components/ContactCard';
+import HomeCard from '../components/HomeCard';
+
 
 const HomeScreen = ({ route, navigation }) => {
 
@@ -22,11 +24,7 @@ const HomeScreen = ({ route, navigation }) => {
                 <Title>Recommended Calls</Title>
             </View>
 
-            <ContactCard item={arr[0]} />
-            <ContactCard item={arr[1]} />
-            <ContactCard item={arr[2]} />
-            <ContactCard item={arr[3]} />
-            <ContactCard item={arr[4]} />
+            <HomeCard contactScores={arr} />
 
 
         </View>

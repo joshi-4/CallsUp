@@ -11,11 +11,13 @@ import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
 
 const theme = {
     ...DefaultTheme,
-    roundness: 2,
+    roundness: 20,
     colors: {
         ...DefaultTheme.colors,
         primary: '#3498db',
         accent: '#f1c40f',
+        surface: '#ffffff',
+        activeColor: '#ffffff',
     },
 };
 
@@ -26,5 +28,6 @@ const Main = () => {
         </PaperProvider>
     )
 }
+export { theme };
 export default Main;
 AppRegistry.registerComponent(appName, () => Main);

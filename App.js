@@ -23,28 +23,82 @@ import SettingsScreen from './screens/SettingsScreen';
 import AppNavBar from './components/Appbar';
 import Contacts from 'react-native-contacts';
 import CallLogs from 'react-native-call-log';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { theme } from './index';
 
+
+
+
+
+//Helper Functions
+
+const daysBetween = (ts1, ts2) => {
+  if (ts2 > ts1) { let temp = ts1; ts1 = ts2; ts2 = temp; }
+  const oneDay = 1000 * 60 * 60 * 24;
+
+  const days = Math.floor((ts1 - ts2) / oneDay);
+
+  const weeks = Math.floor(days / 7);
+
+  const daysLeft = days % 7;
+  const ans = String(weeks) + 'w' + String(daysLeft) + 'd';
+  return ans;
+}
+
+const numberFormatter = (num) => {
+  num = num.replace(/\D/g, '').slice(-10);
+  console.log(num);
+  return num;
+}
+
+
+// Tab Navigation
 const Tab = createMaterialBottomTabNavigator();
 const TabComponent = ({ route }) => {
   return (
-    <Tab.Navigator>
-      <Tab.Screen name="Home" component={HomeScreen} initialParams={{ contactScores: route.params.contactScores }} />
-      <Tab.Screen name="Contacts" component={ContactsScreen} initialParams={{ contactScores: route.params.contactScores }} />
+    <Tab.Navigator
+      initialRouteName="Home"
+      activeColor={theme.colors.activeColor}
+    //theme={theme}
+    >
+      <Tab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{
+          tabBarLabel: 'Home',
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons name="home" color={color} size={26} />
+          ),
+        }}
+        initialParams={{ contactScores: route.params.contactScores }} />
+      <Tab.Screen
+        name="Contacts"
+        component={ContactsScreen}
+        initialParams={{ contactScores: route.params.contactScores }}
+        options={{
+          tabBarLabel: 'Contacts',
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons name="account-box" color={color} size={26} />
+          ),
+        }}
+      />
     </Tab.Navigator>
   )
 }
 
+// Root Navigation
 const MainStack = createStackNavigator();
 
+
+// App.js
 const App = () => {
 
   const [appLoading, setAppLoading] = useState(true);
-  //const [userContacts, setUserContacts] = useState([]);
-  //const [userCallLogs, setUserCallLogs] = useState([]);
   const [contactScores, setContactScores] = useState([]);
-
   const callLogsMap = new Map();
 
+
+  // Data Fetching while app is loading
   useEffect(() => {
 
     let promise_contact = Contacts.getAll();
@@ -56,7 +110,7 @@ const App = () => {
 
       for (let temp of userCallLogs) {
 
-        let number = temp.phoneNumber;
+        let number = numberFormatter(temp.phoneNumber);
         let name = temp.name;
         let duration = Number(temp.duration);
         let timestamp = Number(temp.timestamp);
@@ -76,13 +130,25 @@ const App = () => {
 
       let arr = [];
 
+
+      const currentTimestamp = new Date().getTime();
+
       for (let temp of userContacts) {
 
         let obj = {};
         obj.name = temp.displayName;
-        obj.number = temp.phoneNumbers[0].number;
-        obj.score = 10 + Math.floor(Math.random() * 10);;
-        obj.last = '3w1d';
+        obj.number = numberFormatter(temp.phoneNumbers[0].number);
+        obj.score = 10 + Math.floor(Math.random() * 10);
+        obj.last = 'never';
+
+        // console.log(obj.number);
+        //console.log(callLogsMap);
+        const t = callLogsMap.get(obj.number);
+        // console.log(t);
+        if (t != undefined) {
+          obj.score = 10 + Math.floor(Math.random() * 10);
+          obj.last = daysBetween(currentTimestamp, t.lastTimestamp);
+        }
 
         arr.push(obj);
       }
@@ -101,7 +167,7 @@ const App = () => {
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={theme}>
       <MainStack.Navigator
         initialRouteName="Tab"
         screenOptions={{

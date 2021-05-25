@@ -10,8 +10,8 @@ const AppNavBar = ({ navigation }) => {
 
     return (
         <Appbar.Header>
-            <Appbar.BackAction onPress={_goBack} />
-            <Appbar.Content title="Title" subtitle="Subtitle" />
+            <Appbar.Action icon="menu" onPress={_handleSearch} />
+            <Appbar.Content title="Calls Up" />
             <Appbar.Action icon="magnify" onPress={_handleSearch} />
             <Appbar.Action icon="dots-vertical" onPress={_handleMore} />
         </Appbar.Header>
