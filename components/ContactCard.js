@@ -1,6 +1,6 @@
 import React from 'react';
 import { Title, Card, Paragraph } from 'react-native-paper';
-import { Text } from 'react-native';
+import { Text, TouchableOpacity } from 'react-native';
 
 const ContactCard = ({ item }) => {
 
@@ -14,16 +14,20 @@ const ContactCard = ({ item }) => {
         last = item.last;
         // number = item != undefined ? item.phoneNumbers[0].number : "Undefined";
     }
+
+    const onPressHandler = () => {
+        console.log(name + ' Pressed');
+    }
+
     return (
-        <Card>
+        <TouchableOpacity onPress={onPressHandler} >
             <Card.Title
                 title={name}
                 subtitle={number}
                 right={() => <Text style={{ margin: 10 }}>{last}</Text>}
             >
-
             </Card.Title>
-        </Card>
+        </TouchableOpacity>
     )
 }
 

@@ -51,6 +51,14 @@ const numberFormatter = (num) => {
   return num;
 }
 
+const scoreCalculater = (t, currentTimestamp) => {
+  const avgFreq = (t.latestTimestamp - t.lastTimestamp) / t.totalCalls;
+  const timeFromLast = (currentTimestamp - t.latestTimestamp);
+
+  const score = avgFreq != 0 ? Math.floor(timeFromLast / avgFreq) : -1;
+
+  return (score);
+}
 
 // Tab Navigation
 const Tab = createMaterialBottomTabNavigator();
@@ -138,7 +146,7 @@ const App = () => {
         let obj = {};
         obj.name = temp.displayName;
         obj.number = numberFormatter(temp.phoneNumbers[0].number);
-        obj.score = 10 + Math.floor(Math.random() * 10);
+        obj.score = -1;
         obj.last = 'never';
 
         // console.log(obj.number);
@@ -146,7 +154,7 @@ const App = () => {
         const t = callLogsMap.get(obj.number);
         // console.log(t);
         if (t != undefined) {
-          obj.score = 10 + Math.floor(Math.random() * 10);
+          obj.score = scoreCalculater(t, currentTimestamp);
           obj.last = daysBetween(currentTimestamp, t.lastTimestamp);
         }
 
@@ -157,6 +165,7 @@ const App = () => {
       setAppLoading(false);
 
     })
+      .catch((err) => { console.log(err) })
   }, []);
 
 
