@@ -25,8 +25,34 @@ import Contacts from 'react-native-contacts';
 import CallLogs from 'react-native-call-log';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { theme } from './index';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
+
+//Storage Functions
+
+const storeData = async (value) => {
+  try {
+    await AsyncStorage.setItem('@storage_Key', value)
+  } catch (e) {
+    // saving error
+    console.log('Could not save in storage');
+  }
+}
+
+const getData = async () => {
+  try {
+    const value = await AsyncStorage.getItem('@storage_Key')
+    if (value !== null) {
+      // value previously stored
+      console.log(value);
+    } else { console.log('Null Value'); }
+  } catch (e) {
+    // error reading value
+
+    console.log('Error reading value');
+  }
+}
 
 
 
@@ -47,7 +73,7 @@ const daysBetween = (ts1, ts2) => {
 
 const numberFormatter = (num) => {
   num = num.replace(/\D/g, '').slice(-10);
-  console.log(num);
+
   return num;
 }
 
@@ -109,6 +135,15 @@ const App = () => {
   // Data Fetching while app is loading
   useEffect(() => {
 
+    getData();
+
+    storeData('Hello, Storage!');
+
+    getData();
+
+
+
+
     let promise_contact = Contacts.getAll();
     let promise_calllogs = CallLogs.loadAll();
 
@@ -137,7 +172,6 @@ const App = () => {
       }
 
       let arr = [];
-
 
       const currentTimestamp = new Date().getTime();
 
