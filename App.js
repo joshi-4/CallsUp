@@ -31,29 +31,53 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 //Storage Functions
 
-const storeData = async (value) => {
+const storeString = async (key, value) => {
   try {
-    await AsyncStorage.setItem('@storage_Key', value)
+    await AsyncStorage.setItem(key, value)
   } catch (e) {
     // saving error
     console.log('Could not save in storage');
   }
 }
 
-const getData = async () => {
+const getString = async (key) => {
   try {
-    const value = await AsyncStorage.getItem('@storage_Key')
+    const value = await AsyncStorage.getItem(key)
     if (value !== null) {
       // value previously stored
-      console.log(value);
-    } else { console.log('Null Value'); }
+      //console.log(value);
+    } //else { console.log('Null Value'); }
+
+    return value;
+
   } catch (e) {
     // error reading value
-
     console.log('Error reading value');
+    return null;
   }
 }
 
+const storeObject = async (key, value) => {
+  try {
+    const jsonValue = JSON.stringify(value)
+    await AsyncStorage.setItem(key, jsonValue)
+  } catch (e) {
+    console.log(e);
+    // saving error
+  }
+}
+
+const getObject = async (key) => {
+  try {
+    const jsonValue = await AsyncStorage.getItem(key);
+
+    return jsonValue != null ? JSON.parse(jsonValue) : null;
+  } catch (e) {
+    // error reading value
+    console.log(e);
+    return null;
+  }
+}
 
 
 //Helper Functions
@@ -129,77 +153,96 @@ const App = () => {
 
   const [appLoading, setAppLoading] = useState(true);
   const [contactScores, setContactScores] = useState([]);
-  const callLogsMap = new Map();
 
+
+  const dataFetch = async () => {
+    //Call Logs
+    const lastUpdatedCallLogs = await getString('lastUpdatedCallLogs');
+    let callLogs;
+    if (lastUpdatedCallLogs == null) {
+      callLogs = await CallLogs.loadAll();
+    } else {
+      callLogs = await CallLogs.load(-1, { minTimestamp: lastUpdatedCallLogs });
+    }
+
+    if (callLogs == null) { callLogs = []; }
+
+    // Contacts
+
+    let lastTotalContacts = await getString('lastTotalContacts');
+    let contacts;
+
+    if (lastTotalContacts == null || lastTotalContacts != String(await Contacts.getCount())) {
+      contacts = await Contacts.getAll();
+
+      lastTotalContacts = await Contacts.getCount();
+      storeObject('contacts', contacts);
+      storeString('lastTotalContacts', String(lastTotalContacts));
+    } else {
+      contacts = await getObject('contacts');
+    }
+
+    if (contacts == null) { contacts = []; }
+
+    // CallLogObject
+    let callLogsObject = await getObject('callLogsObject');
+    if (callLogsObject == null) { callLogsObject = {}; }
+
+    for (let temp of callLogs) {
+
+      let number = numberFormatter(temp.phoneNumber);
+      let name = temp.name;
+      let duration = Number(temp.duration);
+      let timestamp = Number(temp.timestamp);
+
+      if (callLogsObject.hasOwnProperty(number)) {
+        callLogsObject[number].totalDuration += duration;
+        callLogsObject[number].latestTimestamp = timestamp > callLogsObject[number].latestTimestamp ? timestamp : callLogsObject[number].latestTimestamp;
+        callLogsObject[number].totalCalls += 1;
+      } else {
+        callLogsObject[number] = {
+          name: name,
+          latestTimestamp: timestamp,
+          lastTimestamp: timestamp,
+          totalDuration: duration,
+          totalCalls: 1
+        };
+      }
+    }
+
+    let currentTimestamp = new Date().getTime();
+
+    if (callLogs != []) {
+      storeString('lastUpdatedCallLogs', String(currentTimestamp));
+      storeObject('callLogsObject', callLogsObject);
+    }
+
+    //Not Final Yet Changes required in future
+    let arr = [];
+    for (let temp of contacts) {
+      let obj = {};
+      obj.name = temp.displayName;
+      obj.number = numberFormatter(temp.phoneNumbers[0].number);
+      obj.score = -1;
+      obj.last = 'never';
+
+      let t = callLogsObject[obj.number];
+      if (t != undefined) {
+        obj.score = scoreCalculater(t, currentTimestamp);
+        obj.last = daysBetween(currentTimestamp, t.lastTimestamp);
+      }
+
+      arr.push(obj);
+    }
+
+    setContactScores(arr);
+    setAppLoading(false);
+
+  }
 
   // Data Fetching while app is loading
   useEffect(() => {
-
-    getData();
-
-    storeData('Hello, Storage!');
-
-    getData();
-
-
-
-
-    let promise_contact = Contacts.getAll();
-    let promise_calllogs = CallLogs.loadAll();
-
-    Promise.all([promise_contact, promise_calllogs]).then((values) => {
-      let userContacts = values[0];
-      let userCallLogs = values[1];
-
-      for (let temp of userCallLogs) {
-
-        let number = numberFormatter(temp.phoneNumber);
-        let name = temp.name;
-        let duration = Number(temp.duration);
-        let timestamp = Number(temp.timestamp);
-
-        if (callLogsMap.has(number)) {
-          let prev = callLogsMap.get(number);
-          prev.totalDuration += duration;
-          prev.totalCalls += 1;
-          prev.lastTimestamp = timestamp;
-
-          callLogsMap.set(number, prev);
-        }
-        else {
-          callLogsMap.set(number, { name: name, latestTimestamp: timestamp, lastTimestamp: timestamp, totalDuration: duration, totalCalls: 1 })
-        }
-      }
-
-      let arr = [];
-
-      const currentTimestamp = new Date().getTime();
-
-      for (let temp of userContacts) {
-
-        let obj = {};
-        obj.name = temp.displayName;
-        obj.number = numberFormatter(temp.phoneNumbers[0].number);
-        obj.score = -1;
-        obj.last = 'never';
-
-        // console.log(obj.number);
-        //console.log(callLogsMap);
-        const t = callLogsMap.get(obj.number);
-        // console.log(t);
-        if (t != undefined) {
-          obj.score = scoreCalculater(t, currentTimestamp);
-          obj.last = daysBetween(currentTimestamp, t.lastTimestamp);
-        }
-
-        arr.push(obj);
-      }
-
-      setContactScores(arr);
-      setAppLoading(false);
-
-    })
-      .catch((err) => { console.log(err) })
+    dataFetch();
   }, []);
 
 

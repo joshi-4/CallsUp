@@ -13,7 +13,7 @@ import HomeContact from './HomeContact';
 const HomeCard = (props) => {
 
     const arr = props.contactScores;
-    console.log(arr);
+    //   console.log(arr);
     return (
         <Card elevation={2} >
             <HomeContact item={arr[0]} />
