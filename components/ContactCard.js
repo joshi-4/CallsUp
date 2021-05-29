@@ -1,17 +1,27 @@
 import React from 'react';
-import { Title, Card, Paragraph } from 'react-native-paper';
-import { Text, TouchableOpacity } from 'react-native';
+import { Title, Card, Paragraph, Switch } from 'react-native-paper';
+import { Text, TouchableOpacity, View } from 'react-native';
+import { storeObject } from '../App'
+const ContactCard = ({ item, priority }) => {
 
-const ContactCard = ({ item }) => {
+    const [isSwitchOn, setIsSwitchOn] = React.useState(item[1].priority);
+    const onToggleSwitch = () => {
+
+        priority[item[0]] = !isSwitchOn;
+        storeObject('priority', priority);
+        setIsSwitchOn(!isSwitchOn)
+    };
 
     let name = 'John Hamm';
     let number = '+91-9328742983';
     let last = 'never';
 
+    console.log(item)
+
     if (item != undefined) {
-        name = item.name;
-        number = item.number;
-        last = item.last;
+        name = item[1].name;
+        number = item[1].numbers[0];
+        last = item[1].last;
         // number = item != undefined ? item.phoneNumbers[0].number : "Undefined";
     }
 
@@ -20,14 +30,16 @@ const ContactCard = ({ item }) => {
     }
 
     return (
-        <TouchableOpacity onPress={onPressHandler} >
-            <Card.Title
-                title={name}
-                subtitle={number}
-                right={() => <Text style={{ margin: 10 }}>{last}</Text>}
-            >
-            </Card.Title>
-        </TouchableOpacity>
+        //  <TouchableOpacity onPress={onPressHandler} >
+
+        <Card.Title
+            title={name}
+            subtitle={number}
+            right={() => <Text style={{ margin: 10 }}> <Switch value={isSwitchOn} onValueChange={onToggleSwitch} /></Text>}
+        >
+        </Card.Title>
+
+        //</TouchableOpacity>
     )
 }
 

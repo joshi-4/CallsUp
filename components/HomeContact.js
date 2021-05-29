@@ -8,14 +8,14 @@ import {
 import { Avatar, Card, Text } from 'react-native-paper';
 
 const HomeContact = (props) => {
-    const item = props.item;
+    const item = props.item[1];
     let name = 'John Hamm';
-    let number = '+91-9328742983';
+    let number = '+919328742983';
     let last = 'never';
 
     if (item != undefined) {
         name = item.name;
-        number = item.number;
+        number = item.numbers[0];
         last = item.last;
     }
 

@@ -13,14 +13,19 @@ import HomeContact from './HomeContact';
 const HomeCard = (props) => {
 
     const arr = props.contactScores;
+    const finalArr = props.finalArr;
+    console.log(finalArr[0][1].numbers);
     //   console.log(arr);
+
+
+
     return (
         <Card elevation={2} >
-            <HomeContact item={arr[0]} />
-            <HomeContact item={arr[1]} />
-            <HomeContact item={arr[2]} />
-            <HomeContact item={arr[3]} />
-            <HomeContact item={arr[4]} />
+            <HomeContact item={finalArr[0]} />
+            <HomeContact item={finalArr[1]} />
+            <HomeContact item={finalArr[2]} />
+            <HomeContact item={finalArr[3]} />
+            <HomeContact item={finalArr[4]} />
         </Card>
     )
 }

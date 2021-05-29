@@ -57,7 +57,7 @@ const getString = async (key) => {
   }
 }
 
-const storeObject = async (key, value) => {
+export const storeObject = async (key, value) => {
   try {
     const jsonValue = JSON.stringify(value)
     await AsyncStorage.setItem(key, jsonValue)
@@ -128,11 +128,11 @@ const TabComponent = ({ route }) => {
             <MaterialCommunityIcons name="home" color={color} size={26} />
           ),
         }}
-        initialParams={{ contactScores: route.params.contactScores }} />
+        initialParams={{ contactScores: route.params.contactScores, final: route.params.final, priority: route.params.priority }} />
       <Tab.Screen
         name="Contacts"
         component={ContactsScreen}
-        initialParams={{ contactScores: route.params.contactScores }}
+        initialParams={{ contactScores: route.params.contactScores, final: route.params.final, priority: route.params.priority }}
         options={{
           tabBarLabel: 'Contacts',
           tabBarIcon: ({ color }) => (
@@ -153,11 +153,18 @@ const App = () => {
 
   const [appLoading, setAppLoading] = useState(true);
   const [contactScores, setContactScores] = useState([]);
+  const [final, setFinal] = useState({});
 
+  var priority = {};
 
   const dataFetch = async () => {
+    //Priority
+
+    priority = await getObject('priority');
+    if (priority == null) { priority = {}; }
+
     //Call Logs
-    const lastUpdatedCallLogs = await getString('lastUpdatedCallLogs');
+    const lastUpdatedCallLogs = null//await getString('lastUpdatedCallLogs');
     let callLogs;
     if (lastUpdatedCallLogs == null) {
       callLogs = await CallLogs.loadAll();
@@ -184,12 +191,13 @@ const App = () => {
 
     if (contacts == null) { contacts = []; }
 
-    // CallLogObject
+    // callLogsObject
     let callLogsObject = await getObject('callLogsObject');
     if (callLogsObject == null) { callLogsObject = {}; }
 
-    for (let temp of callLogs) {
 
+
+    for (let temp of callLogs) {
       let number = numberFormatter(temp.phoneNumber);
       let name = temp.name;
       let duration = Number(temp.duration);
@@ -231,9 +239,40 @@ const App = () => {
         obj.score = scoreCalculater(t, currentTimestamp);
         obj.last = daysBetween(currentTimestamp, t.lastTimestamp);
       }
-
       arr.push(obj);
     }
+
+
+    for (let temp of contacts) {
+      let obj = {};
+      obj.name = temp.displayName;
+      obj.numbers = [];
+      obj.score = 0;
+      obj.last = 'never';
+      obj.priority = priority.hasOwnProperty(temp.recordID) ? priority[temp.recordID] : false;
+
+      let maxTimestamp = 0;
+
+      for (let t of temp.phoneNumbers) {
+        obj.numbers.push(numberFormatter(t.number));
+      }
+      // console.log(obj.numbers)
+
+      for (let t of obj.numbers) {
+        let a = callLogsObject[t];
+        if (a != undefined) {
+          obj.score += scoreCalculater(a, currentTimestamp);
+          maxTimestamp = a.lastTimestamp > maxTimestamp ? a.lastTimestamp : maxTimestamp;
+        }
+      }
+
+      if (maxTimestamp != 0) { obj.last = daysBetween(currentTimestamp, maxTimestamp); }
+
+      final[temp.recordID] = obj;
+
+    }
+
+    // console.log(final);
 
     setContactScores(arr);
     setAppLoading(false);
@@ -262,7 +301,7 @@ const App = () => {
         <MainStack.Screen
           name='Tab'
           component={TabComponent}
-          initialParams={{ contactScores: contactScores }}
+          initialParams={{ contactScores: contactScores, final: final, priority: priority }}
         />
         <MainStack.Screen name='Settings' component={SettingsScreen} options={{ headerShown: false }} />
       </MainStack.Navigator>

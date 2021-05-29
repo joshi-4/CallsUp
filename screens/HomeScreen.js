@@ -15,8 +15,14 @@ import HomeCard from '../components/HomeCard';
 const HomeScreen = ({ route, navigation }) => {
 
     let arr = route.params.contactScores;
-
     arr.sort((a, b) => { return (b.score - a.score); })
+
+    let final = route.params.final;
+    let finalArr = Object.entries(final);
+
+    finalArr.sort((a, b) => { return (b[1].score - a[1].score) });
+
+
 
     return (
         <View style={appStyles.container}>
@@ -24,7 +30,7 @@ const HomeScreen = ({ route, navigation }) => {
                 <Title>Recommended Calls</Title>
             </View>
 
-            <HomeCard contactScores={arr} />
+            <HomeCard contactScores={arr} finalArr={finalArr} />
 
 
         </View>
