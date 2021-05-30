@@ -67,7 +67,7 @@ export const storeObject = async (key, value) => {
   }
 }
 
-const getObject = async (key) => {
+export const getObject = async (key) => {
   try {
     const jsonValue = await AsyncStorage.getItem(key);
 
@@ -162,6 +162,7 @@ const App = () => {
 
     priority = await getObject('priority');
     if (priority == null) { priority = {}; }
+    console.log(priority);
 
     //Call Logs
     const lastUpdatedCallLogs = null//await getString('lastUpdatedCallLogs');

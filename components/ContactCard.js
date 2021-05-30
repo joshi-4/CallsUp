@@ -1,22 +1,20 @@
 import React from 'react';
 import { Title, Card, Paragraph, Switch } from 'react-native-paper';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { storeObject } from '../App'
-const ContactCard = ({ item, priority }) => {
+import { storeObject, getObject } from '../App'
+const ContactCard = ({ item }) => {
 
     const [isSwitchOn, setIsSwitchOn] = React.useState(item[1].priority);
-    const onToggleSwitch = () => {
-
+    const onToggleSwitch = async () => {
+        setIsSwitchOn(!isSwitchOn)
+        let priority = await getObject('priority');
         priority[item[0]] = !isSwitchOn;
         storeObject('priority', priority);
-        setIsSwitchOn(!isSwitchOn)
     };
 
     let name = 'John Hamm';
     let number = '+91-9328742983';
     let last = 'never';
-
-    console.log(item)
 
     if (item != undefined) {
         name = item[1].name;
