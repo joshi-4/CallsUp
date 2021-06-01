@@ -8,6 +8,8 @@
 import 'react-native-gesture-handler';
 import React, { useState, useEffect } from 'react';
 import {
+  PermissionsAndroid,
+  Platform,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -26,8 +28,7 @@ import CallLogs from 'react-native-call-log';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { theme } from './index';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-
+import { ActivityIndicator } from 'react-native-paper';
 
 //Storage Functions
 
@@ -101,11 +102,14 @@ const numberFormatter = (num) => {
   return num;
 }
 
-const scoreCalculater = (t, currentTimestamp) => {
-  const avgFreq = (t.latestTimestamp - t.lastTimestamp) / t.totalCalls;
-  const timeFromLast = (currentTimestamp - t.latestTimestamp);
+const scoreCalculater = (contact, currentTimestamp, priority) => {
 
-  const score = avgFreq != 0 ? Math.floor(timeFromLast / avgFreq) : -1;
+  const avgFreq = (contact.latestTimestamp - contact.lastTimestamp) / contact.totalCalls;
+  const avgDuration = contact.totalDuration / contact.totalCalls;
+  const timeFromLast = (currentTimestamp - contact.latestTimestamp);
+  let score = avgFreq != 0 ? Math.floor(timeFromLast / avgFreq) : 1;
+
+  if (priority) { score *= 2; }
 
   return (score);
 }
@@ -128,11 +132,11 @@ const TabComponent = ({ route }) => {
             <MaterialCommunityIcons name="home" color={color} size={26} />
           ),
         }}
-        initialParams={{ contactScores: route.params.contactScores, final: route.params.final, priority: route.params.priority }} />
+        initialParams={{ final: route.params.final, priority: route.params.priority }} />
       <Tab.Screen
         name="Contacts"
         component={ContactsScreen}
-        initialParams={{ contactScores: route.params.contactScores, final: route.params.final, priority: route.params.priority }}
+        initialParams={{ final: route.params.final, priority: route.params.priority }}
         options={{
           tabBarLabel: 'Contacts',
           tabBarIcon: ({ color }) => (
@@ -152,14 +156,35 @@ const MainStack = createStackNavigator();
 const App = () => {
 
   const [appLoading, setAppLoading] = useState(true);
-  const [contactScores, setContactScores] = useState([]);
   const [final, setFinal] = useState({});
 
   var priority = {};
 
   const dataFetch = async () => {
-    //Priority
 
+    const ContactsGranted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
+      {
+        title: 'Contacts Permission',
+        message: 'This app would like to view your contacts.',
+        buttonNeutral: "Ask Me Later",
+        buttonNegative: "Cancel",
+        buttonPositive: "OK"
+      });
+
+    const CallLogsGranted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.READ_CALL_LOG,
+      {
+        title: "Call Logs Permission",
+        message: 'This app would like to view your Call Logs',
+        buttonNeutral: "Ask Me Later",
+        buttonNegative: "Cancel",
+        buttonPositive: "OK"
+      }
+    )
+
+
+    //Priority
     priority = await getObject('priority');
     if (priority == null) { priority = {}; }
     console.log(priority);
@@ -177,7 +202,7 @@ const App = () => {
 
     // Contacts
 
-    let lastTotalContacts = await getString('lastTotalContacts');
+    let lastTotalContacts = null//await getString('lastTotalContacts');
     let contacts;
 
     if (lastTotalContacts == null || lastTotalContacts != String(await Contacts.getCount())) {
@@ -193,11 +218,11 @@ const App = () => {
     if (contacts == null) { contacts = []; }
 
     // callLogsObject
-    let callLogsObject = await getObject('callLogsObject');
+    let callLogsObject = null //await getObject('callLogsObject');
     if (callLogsObject == null) { callLogsObject = {}; }
 
 
-
+    // Call Logs Object getting updated
     for (let temp of callLogs) {
       let number = numberFormatter(temp.phoneNumber);
       let name = temp.name;
@@ -207,6 +232,7 @@ const App = () => {
       if (callLogsObject.hasOwnProperty(number)) {
         callLogsObject[number].totalDuration += duration;
         callLogsObject[number].latestTimestamp = timestamp > callLogsObject[number].latestTimestamp ? timestamp : callLogsObject[number].latestTimestamp;
+        callLogsObject[number].lastTimestamp = timestamp < callLogsObject[number].lastTimestamp ? timestamp : callLogsObject[number].lastTimestamp;
         callLogsObject[number].totalCalls += 1;
       } else {
         callLogsObject[number] = {
@@ -227,22 +253,6 @@ const App = () => {
     }
 
     //Not Final Yet Changes required in future
-    let arr = [];
-    for (let temp of contacts) {
-      let obj = {};
-      obj.name = temp.displayName;
-      obj.number = numberFormatter(temp.phoneNumbers[0].number);
-      obj.score = -1;
-      obj.last = 'never';
-
-      let t = callLogsObject[obj.number];
-      if (t != undefined) {
-        obj.score = scoreCalculater(t, currentTimestamp);
-        obj.last = daysBetween(currentTimestamp, t.lastTimestamp);
-      }
-      arr.push(obj);
-    }
-
 
     for (let temp of contacts) {
       let obj = {};
@@ -262,7 +272,7 @@ const App = () => {
       for (let t of obj.numbers) {
         let a = callLogsObject[t];
         if (a != undefined) {
-          obj.score += scoreCalculater(a, currentTimestamp);
+          obj.score += scoreCalculater(a, currentTimestamp, obj.priority);
           maxTimestamp = a.lastTimestamp > maxTimestamp ? a.lastTimestamp : maxTimestamp;
         }
       }
@@ -270,12 +280,11 @@ const App = () => {
       if (maxTimestamp != 0) { obj.last = daysBetween(currentTimestamp, maxTimestamp); }
 
       final[temp.recordID] = obj;
+      console.log(obj);
 
     }
 
     // console.log(final);
-
-    setContactScores(arr);
     setAppLoading(false);
 
   }
@@ -288,7 +297,9 @@ const App = () => {
 
   if (appLoading) {
     return (
-      <View><Text>App is Loading</Text></View>
+      <View style={{ flex: 1, justifyContent: 'center', alignContent: 'center' }}>
+        <ActivityIndicator animating={true} size='large' />
+      </View>
     )
   }
 
@@ -302,7 +313,7 @@ const App = () => {
         <MainStack.Screen
           name='Tab'
           component={TabComponent}
-          initialParams={{ contactScores: contactScores, final: final, priority: priority }}
+          initialParams={{ final: final, priority: priority }}
         />
         <MainStack.Screen name='Settings' component={SettingsScreen} options={{ headerShown: false }} />
       </MainStack.Navigator>

@@ -10,10 +10,9 @@ const AppNavBar = ({ navigation }) => {
 
     return (
         <Appbar.Header>
-            <Appbar.Action icon="menu" onPress={_handleSearch} />
-            <Appbar.Content title="Calls Up" />
-            <Appbar.Action icon="magnify" onPress={_handleSearch} />
-            <Appbar.Action icon="dots-vertical" onPress={_handleMore} />
+            <Appbar.Content title="Calls Up" titleStyle={{ fontSize: 32 }} />
+
+            <Appbar.Action icon="help-circle" size={32} onPress={_handleMore} />
         </Appbar.Header>
     );
 };

@@ -13,9 +13,6 @@ import ContactCard from '../components/ContactCard';
 
 const ContactsScreen = ({ route, navigation }) => {
 
-    let contactScores = route.params.contactScores;
-    contactScores.sort((a, b) => { return (a.name > b.name); })
-
     let final = route.params.final;
     let finalArr = Object.entries(final)
     finalArr.sort((a, b) => { return (a[1].name > b[1].name) });

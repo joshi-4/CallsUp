@@ -9,6 +9,7 @@ import { Avatar, Card, Text } from 'react-native-paper';
 
 const HomeContact = (props) => {
     const item = props.item[1];
+    console.log(props);
     let name = 'John Hamm';
     let number = '+919328742983';
     let last = 'never';
@@ -29,7 +30,7 @@ const HomeContact = (props) => {
                 <Card.Title
                     title={name}
                     subtitle={number}
-                    left={(props) => <Avatar.Icon {...props} icon="folder" />}
+                    left={(props) => <Avatar.Icon {...props} icon="account-multiple" />}
                     right={(props) => <Text style={{ margin: 20, fontWeight: 'bold' }} >{last}</Text>}
                 />
             </TouchableOpacity>
