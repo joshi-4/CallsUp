@@ -190,33 +190,39 @@ const App = () => {
     console.log(priority);
 
     //Call Logs
-    const lastUpdatedCallLogs = null//await getString('lastUpdatedCallLogs');
-    let callLogs;
-    if (lastUpdatedCallLogs == null) {
-      callLogs = await CallLogs.loadAll();
-    } else {
-      callLogs = await CallLogs.load(-1, { minTimestamp: lastUpdatedCallLogs });
+
+    let callLogs = [];
+
+    if (CallLogsGranted === PermissionsAndroid.RESULTS.GRANTED) {
+      const lastUpdatedCallLogs = null//await getString('lastUpdatedCallLogs');
+
+      if (lastUpdatedCallLogs == null) {
+        callLogs = await CallLogs.loadAll();
+      } else {
+        callLogs = await CallLogs.load(-1, { minTimestamp: lastUpdatedCallLogs });
+      }
+
+      if (callLogs == null) { callLogs = []; }
     }
 
-    if (callLogs == null) { callLogs = []; }
 
     // Contacts
 
     let lastTotalContacts = null//await getString('lastTotalContacts');
-    let contacts;
+    let contacts = [];
+    if (ContactsGranted === PermissionsAndroid.RESULTS.GRANTED) {
+      if (lastTotalContacts == null || lastTotalContacts != String(await Contacts.getCount())) {
+        contacts = await Contacts.getAll();
 
-    if (lastTotalContacts == null || lastTotalContacts != String(await Contacts.getCount())) {
-      contacts = await Contacts.getAll();
+        lastTotalContacts = await Contacts.getCount();
+        storeObject('contacts', contacts);
+        storeString('lastTotalContacts', String(lastTotalContacts));
+      } else {
+        contacts = await getObject('contacts');
+      }
 
-      lastTotalContacts = await Contacts.getCount();
-      storeObject('contacts', contacts);
-      storeString('lastTotalContacts', String(lastTotalContacts));
-    } else {
-      contacts = await getObject('contacts');
+      if (contacts == null) { contacts = []; }
     }
-
-    if (contacts == null) { contacts = []; }
-
     // callLogsObject
     let callLogsObject = null //await getObject('callLogsObject');
     if (callLogsObject == null) { callLogsObject = {}; }
