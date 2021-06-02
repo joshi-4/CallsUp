@@ -8,6 +8,7 @@ const ContactCard = ({ item }) => {
     const onToggleSwitch = async () => {
         setIsSwitchOn(!isSwitchOn)
         let priority = await getObject('priority');
+        if (priority == null) { priority = {}; }
         priority[item[0]] = !isSwitchOn;
         storeObject('priority', priority);
     };
