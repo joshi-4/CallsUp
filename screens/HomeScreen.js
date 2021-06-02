@@ -23,11 +23,17 @@ const HomeScreen = ({ route, navigation }) => {
 
     return (
         <View style={appStyles.container}>
-            <View>
+            <View style={{ paddingBottom: 24 }} >
                 <Title>Recommended Calls</Title>
+                <HomeCard finalArr={finalArr} />
             </View>
 
-            <HomeCard finalArr={finalArr} />
+            <View>
+                <Title>Notification Settings</Title>
+                <Card elevation={2}>
+
+                </Card>
+            </View>
 
 
         </View>
