@@ -32,7 +32,7 @@ import { ActivityIndicator } from 'react-native-paper';
 
 //Storage Functions
 
-const storeString = async (key, value) => {
+export const storeString = async (key, value) => {
   try {
     await AsyncStorage.setItem(key, value)
   } catch (e) {
@@ -41,7 +41,7 @@ const storeString = async (key, value) => {
   }
 }
 
-const getString = async (key) => {
+export const getString = async (key) => {
   try {
     const value = await AsyncStorage.getItem(key)
     if (value !== null) {
@@ -289,6 +289,7 @@ const App = () => {
       console.log(obj);
 
     }
+
 
     // console.log(final);
     setAppLoading(false);

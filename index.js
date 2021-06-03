@@ -28,18 +28,6 @@ PushNotification.createChannel(
     }
 )
 
-const scheduleNotification = () => {
-    PushNotification.localNotificationSchedule({
-        //... You can use all the options from localNotifications
-        channelId: "channel-id",
-        message: "Tap to see which of your Contacts you need to call today!", // (required)
-        date: new Date(Date.now() + 20 * 1000), // in 60 secs
-        allowWhileIdle: false, // (optional) set notification to work while on doze, default: false
-        repeatType: "day",
-    });
-}
-
-scheduleNotification();
 
 const theme = {
     ...DefaultTheme,
