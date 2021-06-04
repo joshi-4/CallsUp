@@ -9,7 +9,7 @@ import { Avatar, Card, Text } from 'react-native-paper';
 
 const HomeContact = (props) => {
     const item = props.item[1];
-    console.log(props);
+
     let name = 'John Hamm';
     let number = '+919328742983';
     let last = 'never';

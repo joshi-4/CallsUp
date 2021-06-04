@@ -107,10 +107,18 @@ const scoreCalculater = (contact, currentTimestamp, priority) => {
   const avgFreq = (contact.latestTimestamp - contact.lastTimestamp) / contact.totalCalls;
   const avgDuration = contact.totalDuration / contact.totalCalls;
   const timeFromLast = (currentTimestamp - contact.latestTimestamp);
-  let score = avgFreq != 0 ? Math.floor(timeFromLast / avgFreq) : 1;
 
-  if (priority) { score *= 2; }
+  if (avgFreq == 0) { return 1; }
+  if (contact.totalCalls < 2) { return 1; }
 
+  let score = Math.ceil(timeFromLast / avgFreq);
+
+  if (score > 10) { score = Math.max(20 - score, 2); }
+
+
+  if (priority) { score *= 3; }
+
+  //////////////
   return (score);
 }
 
@@ -187,7 +195,6 @@ const App = () => {
     //Priority
     priority = await getObject('priority');
     if (priority == null) { priority = {}; }
-    console.log(priority);
 
     //Call Logs
 
@@ -286,8 +293,6 @@ const App = () => {
       if (maxTimestamp != 0) { obj.last = daysBetween(currentTimestamp, maxTimestamp); }
 
       final[temp.recordID] = obj;
-      console.log(obj);
-
     }
 
 

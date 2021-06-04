@@ -36,7 +36,6 @@ const theme = {
         ...DefaultTheme.colors,
         primary: '#5784BA',
         accent: '#EB96AA',
-        surface: '#ffffff',
         activeColor: '#ffffff',
     },
 };

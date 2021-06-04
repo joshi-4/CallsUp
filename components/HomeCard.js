@@ -14,10 +14,6 @@ const HomeCard = (props) => {
 
     const finalArr = props.finalArr;
     const arr = finalArr.slice(0, Math.min(finalArr.length, 5));
-    console.log(finalArr[0][1].numbers);
-    //   console.log(arr);
-
-    console.log(arr);
 
 
     return (
